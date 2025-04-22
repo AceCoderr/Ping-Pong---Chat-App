@@ -1,4 +1,15 @@
-FROM ubuntu:latest
-LABEL authors="admin"
+# Use OpenJDK image
+FROM openjdk:21-jdk-slim
 
-ENTRYPOINT ["top", "-b"]
+# Set working directory
+WORKDIR /app
+
+# Copy jar (after mvn package)
+COPY target/*.jar app.jar
+
+# Expose port
+EXPOSE 8080
+
+# Start app
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
