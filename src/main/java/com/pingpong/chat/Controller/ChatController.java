@@ -31,7 +31,7 @@ public class ChatController {
         this.mapper = mapper;
     }
 
-    @PostMapping("/create")
+    @PostMapping("/api/create")
     public CompletableFuture<ResponseEntity<String>> createRoom(@RequestBody RoomRequest request) {
         return Patterns.ask(roomManager, new RoomManagerActor.Create(request.getRoomName()), Duration.ofSeconds(3))
                 .thenApply(result -> {
@@ -49,7 +49,7 @@ public class ChatController {
                 }).toCompletableFuture();
     }
 
-    @GetMapping("/fetchRooms")
+    @GetMapping("/api/fetchRooms")
     public CompletableFuture<ResponseEntity<String>> fetchRooms(){
         return Patterns.ask(roomManager,new RoomManagerActor.FetchAllRooms(),Duration.ofSeconds(3))
                 .thenApply(result->{
