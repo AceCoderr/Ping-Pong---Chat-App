@@ -18,7 +18,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-
     @Bean
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -35,7 +34,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://16.170.108.201:3000"));
         configuration.setAllowedMethods(List.of("GET","PUT","POST","DELETE"));
         configuration.setAllowCredentials(true);
         configuration.addAllowedHeader("*");
