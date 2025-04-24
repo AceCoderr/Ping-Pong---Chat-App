@@ -50,17 +50,28 @@ public class ChatController {
     }
 
     @GetMapping("/api/fetchRooms")
-    public CompletableFuture<ResponseEntity<String>> fetchRooms(){
-        return Patterns.ask(roomManager,new RoomManagerActor.FetchAllRooms(),Duration.ofSeconds(3))
-                .thenApply(result->{
+    public CompletableFuture<ResponseEntity<String>> fetchRooms() {
+        return Patterns.ask(roomManager, new RoomManagerActor.FetchAllRooms(), Duration.ofSeconds(3))
+                .thenApply(result -> {
                     RoomManagerActor.FetchedAll msg = (RoomManagerActor.FetchedAll) result;
-                    String json = null;
                     try {
-                        json= mapper.writeValueAsString(msg.getAllRooms());
+                        String json = mapper.writeValueAsString(msg.getAllRooms());
+                        return ResponseEntity.ok(json);
                     } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body("Error while processing JSON.");
                     }
-                    return ResponseEntity.status(HttpStatus.OK).body(json);
-                }).toCompletableFuture();
+                })
+                .exceptionally(ex -> {
+                    if (ex.getCause() instanceof akka.pattern.AskTimeoutException) {
+                        return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
+                                .body("Request timed out while fetching rooms.");
+                    } else {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body("Unexpected error: " + ex.getMessage());
+                    }
+                })
+                .toCompletableFuture();
     }
+
 }
